@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { connect } from "react-redux";
 import { fetchPosts } from "../actions/postsActions";
 import { Post } from "../components/Post";
+import { useCreatePost } from "../lib/mutations";
+import { useQuery } from "@tanstack/react-query";
 
 const Posts = ({ dispatch, loading, posts, hasErrors }) => {
   useEffect(() => {
@@ -13,10 +15,27 @@ const Posts = ({ dispatch, loading, posts, hasErrors }) => {
     if (hasErrors) return <p>Unable to display posts.</p>;
     return posts.map((post) => <Post key={post.id} post={post} />);
   };
-  console.log(dispatch, loading, posts, hasErrors)
+
+  const createPostMutation = useCreatePost();
+  
+  const createPost = () => {
+    createPostMutation.mutate({
+      title: "Books",
+      content:
+        "reading books is very important for your mind and mental health",
+    });
+  };
+
+  const { data: allPosts } = useQuery({
+    queryKey: ["/getall"],
+    retry: 1,
+  });
+
+  console.log(allPosts);
   return (
     <section className="bg-white dark:bg-gray-900">
       {/* {renderPosts()} */}
+      <button onClick={createPost}>Create post</button>
       <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
         <div className="mx-auto max-w-screen-sm text-center lg:mb-16 mb-8">
           <h2 className="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">

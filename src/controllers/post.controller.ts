@@ -1,13 +1,19 @@
 import { Request, Response } from "express";
 import { prisma } from "../server";
 
-const createBlogPost = async (req: Request, res: Response) => {
+interface CustomRequest extends Request {
+  userId: number; 
+}
+
+const createBlogPost = async (req: CustomRequest, res: Response) => {
   try {
     const { title, content } = req.body;
+    const userId = req.userId;
     const newBlogPost = await prisma.post.create({
       data: {
         title,
         content,
+        userId,
       },
     });
     res.status(200).json(newBlogPost);
